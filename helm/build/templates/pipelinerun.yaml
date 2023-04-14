@@ -1,0 +1,25 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: {{ .Values.app.name }}-pipeline-
+spec:
+  params:
+    - name: source-repo
+      value: {{ .Values.git.repo }}
+    - name: source-branch
+      value: {{ .Values.git.branch }}
+      type: string
+    - name: output-image
+      value: {{ include "image.url" . }}
+  pipelineRef:
+    name: {{ .Values.app.name }}-pipeline
+  workspaces:
+    - name: source-folder
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
